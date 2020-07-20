@@ -13,20 +13,14 @@ import java.util.Optional;
 
 public class BookService {
 
-    public List<Book> addBook(String book) throws  ServiceException {
+    public List<Book> addBook(Book book) throws  ServiceException {
         List<Book> resultList;
         try{
-        CustomParser customParser = new CustomParser();
-        Optional<Book> bookOptional = customParser.parseBook(book);
-        if(!bookOptional.isPresent()){
-            throw new ServiceException(CustomParser.getParseErrorMessage());
-        }
-        Book tempBook = bookOptional.get();
-        if(!BookValidator.validateBook(tempBook)){
-            throw new ServiceException(BookValidator.getInvalidBookDataMessage());
-        }
-        BookListDao bookListDao = new BookListDaoImpl();
-        resultList = bookListDao.add(tempBook);
+            if(!BookValidator.validateBook(book)){
+                throw new ServiceException(BookValidator.getInvalidBookDataMessage());
+            }
+            BookListDao bookListDao = new BookListDaoImpl();
+            resultList = bookListDao.add(book);
         } catch (DaoException e){
             throw new ServiceException("Error while adding book",e);
         }
@@ -40,12 +34,7 @@ public class BookService {
 
     public List<Book> findByAuthor(String author) throws ServiceException {
         List<Book> resultList;
-        CustomParser customParser = new CustomParser();
-        Optional<String[]> authorOptional = customParser.parseAuthor(author);
-        if(!authorOptional.isPresent()){
-            throw new ServiceException(CustomParser.getParseErrorMessage());
-        }
-        String[] authorsStrArray = authorOptional.get();
+        String[] authorsStrArray = author.split(CustomParser.getAuthorsSplitPattern());
         if(!BookValidator.validateAuthor(authorsStrArray)){
             throw new ServiceException(BookValidator.getInvalidBookDataMessage());
         }
@@ -54,48 +43,30 @@ public class BookService {
         return resultList;
     }
 
-    public List<Book> findByNumberOfPages(String numberOfPages) throws ServiceException {
+    public List<Book> findByNumberOfPages(int numberOfPages) throws ServiceException {
         List<Book> resultList;
-        CustomParser customParser = new CustomParser();
-        Optional<Integer> numberOptional = customParser.parseNumberOfPages(numberOfPages);
-        if(!numberOptional.isPresent()){
-            throw new ServiceException(CustomParser.getParseErrorMessage());
-        }
-        int resultNumber = numberOptional.get();
-        if(!BookValidator.validateNumberOfPages(resultNumber)){
+        if(!BookValidator.validateNumberOfPages(numberOfPages)){
             throw new ServiceException(BookValidator.getInvalidBookDataMessage());
         }
         BookListDao bookListDao = new BookListDaoImpl();
-        resultList = bookListDao.findByNumberOfPages(resultNumber);
+        resultList = bookListDao.findByNumberOfPages(numberOfPages);
         return resultList;
     }
 
     public List<Book> findByName(String name) throws ServiceException {
         List<Book> resultList;
-        CustomParser customParser = new CustomParser();
-        Optional<String> nameOptional = customParser.parseName(name);
-        if(!nameOptional.isPresent()){
-            throw new ServiceException(CustomParser.getParseErrorMessage());
-        }
-        String resultName = nameOptional.get();
-        if(!BookValidator.validateName(resultName)){
+        if(!BookValidator.validateName(name)){
             throw new ServiceException(BookValidator.getInvalidBookDataMessage());
         }
         BookListDao bookListDao = new BookListDaoImpl();
-        resultList = bookListDao.findByName(resultName);
+        resultList = bookListDao.findByName(name);
         return resultList;
     }
 
-    public Optional<Book> findById(String id) throws ServiceException {
+    public Optional<Book> findById(long id)  {
         Optional<Book> result;
-        CustomParser customParser = new CustomParser();
-        Optional<Long> idOptional = customParser.parseId(id);
-        if(!idOptional.isPresent()){
-            throw new ServiceException(CustomParser.getParseErrorMessage());
-        }
-        long resultId = idOptional.get();
         BookListDao bookListDao = new BookListDaoImpl();
-        result = bookListDao.findById(resultId);
+        result = bookListDao.findById(id);
         return result;
     }
 
@@ -120,20 +91,14 @@ public class BookService {
         List<Book> sortedBookList  = bookListDao.sortById();
         return sortedBookList;    }
 
-    public List<Book> remove(String book) throws ServiceException {
+    public List<Book> remove(Book book) throws ServiceException {
         BookListDao bookListDao = new BookListDaoImpl();
         List<Book> bookList;
-        CustomParser customParser = new CustomParser();
-        Optional<Book> bookOptional = customParser.parseBook(book);
-        if(!bookOptional.isPresent()){
-            throw new ServiceException(CustomParser.getParseErrorMessage());
-        }
-        Book resultBook = bookOptional.get();
-        if(!BookValidator.validateBook(resultBook)){
+        if(!BookValidator.validateBook(book)){
             throw new ServiceException(BookValidator.getInvalidBookDataMessage());
         }
         try {
-            bookList = bookListDao.remove(resultBook);
+            bookList = bookListDao.remove(book);
         } catch (DaoException e) {
             throw new ServiceException("Error while removing book");
         }

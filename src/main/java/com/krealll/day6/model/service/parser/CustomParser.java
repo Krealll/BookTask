@@ -16,10 +16,9 @@ public class CustomParser {
     private final static String AUTHOR_REG_EX = "^("+LAST_NAME_REG_EX+AUTHORS_FIRST_AND_MIDDLE_NAME_REG_EX+" )+$";
     private final static String PARAM_SPLIT_PATTERN = "; ";
     private final static String AUTHORS_SPLIT_PATTERN = ", ";
-    private final static String PARSE_ERROR_MESSAGE = "ERROR WHILE PARSING";
 
-    public static String getParseErrorMessage() {
-        return PARSE_ERROR_MESSAGE;
+    public static String getAuthorsSplitPattern() {
+        return AUTHORS_SPLIT_PATTERN;
     }
 
     public Optional<Book> parseBook(String paramString){
